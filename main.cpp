@@ -16,6 +16,8 @@ class Player { /// Player class, constructor values exist because this class is 
     int damage;
     float accuracy;
     int armor;
+    int level;
+    int xp;
     int inventory[];
 public:
     Player() {
@@ -24,6 +26,8 @@ public:
         damage = 1;
         accuracy = 0.9;
         armor = 0;
+        level = 1;
+        xp = 0;
         cout << "You wake up in your room in Florida, near Lake Okeechobee. \"Another day, another dollar,\" you say"   /// Find a fix for breaking strings into 120
                 " to yourself, praying" << endl << "that today will break you out of your cycle of monotony. Luckily, " /// char segments. Low priority
                                                    "something insane is about to happen." << endl;
