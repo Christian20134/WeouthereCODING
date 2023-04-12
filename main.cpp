@@ -2,11 +2,16 @@
 #include <string>
 using namespace std;
 
-void enemyEncounter() {}; /// Encounter/battle function prototype
 
+/* Prototypes */
+class Enemy; /// Prototyped due to private functions in Player class
+void enemyEncounter(); /// Encounter/battle function
+void gameOver(); /// If you die
+
+
+/* Class Definitons */
 class Player { /// Player class, constructor values exist because this class is only created
-               /// when the game is started.
-    int hp;
+    int hp;    /// when the game is started.
     int maxHP;
     int damage;
     float accuracy;
@@ -19,7 +24,15 @@ public:
         damage = 1;
         accuracy = 0.9;
         armor = 0;
-        cout << "Object of class Player created. ";
+        cout << "You wake up in your room in Florida, near Lake Okeechobee. \"Another day, another dollar,\" you say"   /// Find a fix for breaking strings into 120
+                " to yourself, praying" << endl << "that today will break you out of your cycle of monotony. Luckily, " /// char segments. Low priority
+                                                   "something insane is about to happen." << endl;
+    }
+    void takeDamage(int damageTaken) {
+        hp -= damageTaken;
+        if (hp <= 0) {
+            gameOver();
+        }
     }
     friend void enemyEncounter();
 };
@@ -36,7 +49,17 @@ public:
         armor = Z;
         accuracy = J;
     }
+    friend void enemyEncounter();
 };
+
+
+/* Function Definitions */
+void enemyEncounter(Player& player, Enemy& enemy) {
+    string input = "";
+    cout << "What will you do? (Fight, Item, Run)" << endl;
+    cin >> input;
+}
+
 
 int main() {
     Player mainPlayer;
