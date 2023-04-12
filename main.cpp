@@ -4,8 +4,9 @@ using namespace std;
 
 
 /* Prototypes */
-class Enemy; /// Prototyped due to private functions in Player class
-void enemyEncounter(); /// Encounter/battle function
+class Enemy;
+class Player;
+void enemyEncounter(Player& player, Enemy& enemy); /// Encounter/battle function
 void gameOver(); /// If you die
 
 
@@ -38,7 +39,7 @@ public:
             gameOver();
         }
     }
-    friend void enemyEncounter();
+    friend void enemyEncounter(Player& player, Enemy& enemy);
 };
 
 class Enemy { /// Template for enemies in encounters
@@ -53,20 +54,24 @@ public:
         armor = Z;
         accuracy = J;
     }
-    friend void enemyEncounter();
+    friend void enemyEncounter(Player& player, Enemy& enemy);
 };
 
 
 /* Function Definitions */
 void enemyEncounter(Player& player, Enemy& enemy) {
     string input = "";
-    cout << "What will you do? (Fight, Item, Run)" << endl;
-    cin >> input;
+    do {
+        cout << "What will you do? (Fight, Item, Run)" << endl; /// Player turn, goes first cause uhhhhhhh
+        cin >> input;
+    } while (enemy.hp >= 0);
 }
 
 
 int main() {
     Player mainPlayer;
+    Enemy testEnemy(1, 1, 0, 1);
+    enemyEncounter(mainPlayer, testEnemy);
     return 0;
 }
 
