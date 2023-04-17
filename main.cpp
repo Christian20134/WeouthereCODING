@@ -1,6 +1,14 @@
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <thread>
 using namespace std;
+
+/* Dialogue storage */
+struct Dialogue {
+    string introText = "This is a tale of adventure, YOUR tale of adventure to find the fabled fountain of youth located deep within the Everglades. Many perils await you, brave explorer, twists and turns only the mind can fathom. Do you have what it takes to brave the wild? Or will you fail and never reach the glory you're striving for?";
+
+};
 
 
 /* Prototypes */
@@ -29,9 +37,6 @@ public:
         armor = 0;
         level = 1;
         xp = 0;
-        cout << "You wake up in your room in Florida, near Lake Okeechobee. \"Another day, another dollar,\" you say"   /// Find a fix for breaking strings into 120
-                " to yourself, praying" << endl << "that today will break you out of your cycle of monotony. Luckily, " /// char segments. Low priority
-                                                   "something insane is about to happen." << endl;
     }
     void takeDamage(int damageTaken) {
         hp -= damageTaken;
@@ -59,7 +64,7 @@ public:
 
 
 /* Function Definitions */
-void enemyEncounter(Player& player, Enemy& enemy) {
+void enemyEncounter(Player& player, Enemy& enemy) {                                                                     /// This isn't done yet, but we'll work on it later
     string input = "";
     do {
         cout << "What will you do? (Fight, Item, Run)" << endl; /// Player turn, goes first cause uhhhhhhh
@@ -67,11 +72,25 @@ void enemyEncounter(Player& player, Enemy& enemy) {
     } while (enemy.hp >= 0);
 }
 
+void displayText(string& displayedText) {
+    int colCounter = 0;
+    for (int i = 0; i < displayedText.length(); i++) {
+        cout << displayedText[i];
+        colCounter++;
+        this_thread::sleep_for(chrono::milliseconds(1));
+        if (displayedText[i] == ' ' && colCounter > 112) {
+            cout << " ";
+            cout << endl;
+            colCounter = 0;
+        } else continue;
+    }
+}
+
 
 int main() {
     Player mainPlayer;
-    Enemy testEnemy(1, 1, 0, 1);
-    enemyEncounter(mainPlayer, testEnemy);
+    Dialogue dialogue;
+    displayText(dialogue.introText);
     return 0;
 }
 
