@@ -4,17 +4,19 @@
 #include <thread>
 using namespace std;
 
-/* Dialogue storage */
-struct Dialogue { /// Scene #, dialogue #
+/* Text storage */
+struct Text { /// Scene #, dialogue #, choice #
     string introText = "This is a tale of adventure, YOUR tale of adventure to find the fabled fountain of youth located"
                        " deep within the Everglades. Many perils await you, brave explorer, twists and turns only the "
                        "mind can fathom. Do you have what it takes to brave the wild? Or will you fail and never reach "
                        "the glory you're striving for?";
-    string scene1d1 = "Facing you are the harsh marshes of the Everglades. You were told by your late spelunking "
+    string scene1intro = "Facing you are the harsh marshes of the Everglades. You were told by your late spelunking "
                       "grandfather that he found some hints on a text scroll found while exploring a cave near a "
                       "village. The scroll says that the heart of the Everglades contains a temple buried underneath, "
                       "lost to the sands of time. However, the explorer that finds the temple will be rewarded with "
                       "eternal life.";
+    string userPromptBegin = "What will you do?";
+    string scene1d1c1 = "1. Check the scroll \n 2. Set off on your adventure";
 };
 
 
@@ -23,6 +25,7 @@ class Enemy;
 class Player;
 void enemyEncounter(Player& player, Enemy& enemy); /// Encounter/battle function
 void gameOver(); /// If you die
+void displayText(string& displayedText, int delay, int interLineDelay);
 
 
 /* Class Definitons */
@@ -34,6 +37,7 @@ class Player { /// Player class, constructor values exist because this class is 
     int armor;
     int level;
     int xp;
+    bool scrollChecked;
     int inventory[];
 public:
     Player() {
@@ -44,6 +48,8 @@ public:
         armor = 0;
         level = 1;
         xp = 0;
+        scrollChecked = 0;
+
     }
     void takeDamage(int damageTaken) {
         hp -= damageTaken;
@@ -79,7 +85,7 @@ void enemyEncounter(Player& player, Enemy& enemy) {                             
     } while (enemy.hp >= 0);
 }
 
-void displayText(string& displayedText, int delay) { /// Takes string input and delay between chars in ms.
+void displayText(string& displayedText, int delay, int interLineDelay) { /// Takes string input and delay between chars in ms.
     int colCounter = 0;
     for (int i = 0; i < displayedText.length(); i++) {
         cout << displayedText[i];
@@ -89,6 +95,7 @@ void displayText(string& displayedText, int delay) { /// Takes string input and 
             cout << " ";
             cout << endl;
             colCounter = 0;
+            this_thread::sleep_for(chrono::milliseconds(interLineDelay));
         } else continue;
     }
     cout << endl;
@@ -106,13 +113,20 @@ void transition() {
     }
 };
 
+int choice(Text& text) {
+    displayText(text.userPromptBegin, 1, 250);
+}
+
+int scene1(Text& text) {
+    displayText(text.scene1intro, 1,1);
+}
 
 int main() {
     Player mainPlayer;
-    Dialogue dialogue;
-    displayText(dialogue.introText, 1);
+    Text text;
+    displayText(text.introText, 1, 1);
     transition();
-    displayText(dialogue.scene1d1, 1);
+    scene1(text);
     return 0;
 }
 
