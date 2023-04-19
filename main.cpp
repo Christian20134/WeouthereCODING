@@ -38,6 +38,8 @@ struct Text { /// Scene #, dialogue #, choice #
     string scene1d2 = "\nComing to a fork in the glades, you have two choices: a path to the right that looks traveled "
                       "at a glance, with a clear line to follow through - perhaps it leads somewhere? Or, a path to the "
                       "left that seems less traveled, and may lead you astray.";
+
+    string scene1d2c = "1. Go left\n2. Go right\n3. Go forward";
 };
 
 /* Prototypes */
@@ -128,6 +130,9 @@ void displayText(string& displayedText, int delay, int interLineDelay) { /// Tak
     this_thread::sleep_for(chrono::milliseconds(500));
 }
 
+/// I really want to move everything that takes Text struct input into the class with Text, but idk how to do that
+/// without breaking everything. Maybe separate class with inheritance? Figure out soon, bonus points for OOP
+
 void transition() {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 10; j++) {
@@ -145,15 +150,16 @@ void textBreak(Text& text) {
     cin.ignore(1, '\n');
 }
 
-int choice(Text& text) {                                                                                                /// Find a way to make this a thing. Low priority
-    displayText(text.userPromptBegin, 1, 250);
-}
-
 void whatWillYouDo(Text& text) {
     displayText(text.userPromptBegin, 1, 250);
 }
 
-int scene1(Text& text, Player& player) {
+int choice(Text& text) {                                                                                                /// Find a way to make this a thing. Low priority
+    displayText(text.userPromptBegin, 1, 250);
+}
+
+
+void scene1(Text& text, Player& player) {
     int choice1 = 0;
     displayText(text.scene1d1, 1, 1);
     whatWillYouDo(text);
@@ -166,6 +172,16 @@ int scene1(Text& text, Player& player) {
         case 2:
             displayText(text.scene1d1c2, 1, 1);
             displayText(text.scene1d2, 1, 1);
+            whatWillYouDo(text);
+            displayText(text.scene1d2c, 1, 250);
+            switch (readInput(text)) {
+                case 1:
+
+                case 2:
+
+                case 3:
+
+            }
             break;
     }
 }
