@@ -12,7 +12,8 @@ const int STANDARD_DELAY = 10; /// I think I can incorporate this into a class s
 /* Death IDs */
 enum Death {
     simpleton,
-    pond
+    pond,
+    narrator
 };
 
 /* Text storage */
@@ -21,6 +22,10 @@ struct Text { /// Scene #, dialogue #, choice #
 
     string badInput = "Traveler, I do not understand your command. (Input any of the numbers given.)";
 
+    string repeatedBadInput = "Okay, you're doing this on purpose. You think you're funny? Gonna have a little bit of "
+                              "fun with the person trying to help you on your stupid quest? Well, I quit. No more story. "
+                              "No more adventure. I'm done. Find a new narrator.";
+
     string breakText = "Press ENTER to continue...";
 
     string gameOver = "\nG A M E   O V E R\nReason for death: ";
@@ -28,6 +33,8 @@ struct Text { /// Scene #, dialogue #, choice #
     string reasonSimple = "The pinnacle of idiocy. Absolute buffoonery. Take your simpleton brain somewhere else";
 
     string reasonPond = "Got relaxed. Maybe a little too relaxed...";
+
+    string reasonBadInput = "Pissed off the wrong person.";
 
     string introText = "This is a tale of adventure, YOUR tale of adventure to find the fabled fountain of youth located"
                        " deep within the Everglades. Many perils await you, brave explorer, twists and turns only the "
@@ -191,10 +198,18 @@ void whatWillYouDo(Text& text) {
 }
 
 int readInput(Text& text) {
+    int badChoiceCounter = 0;
     int choice = 0;
     cin >> choice;
     while (choice != 1 && choice != 2 && choice != 3) {
-        displayText(text.badInput, STANDARD_DELAY, 1);
+        if (badChoiceCounter > 3) {
+            displayText(text.repeatedBadInput, STANDARD_DELAY, 1);
+            gameOver(text, narrator);
+            break;
+        } else {
+            displayText(text.badInput, STANDARD_DELAY, 1);
+            badChoiceCounter++;
+        }
         cin >> choice;
     }
     return choice;
@@ -205,8 +220,13 @@ void gameOver(Text& text, int deathReason) {
     switch (deathReason) {
         case simpleton:
             displayText(text.reasonSimple, STANDARD_DELAY, 1000);
+            break;
         case pond:
-        displayText(text.reasonPond, STANDARD_DELAY, 1000);
+            displayText(text.reasonPond, STANDARD_DELAY, 1000);
+            break;
+        case narrator:
+            displayText(text.reasonBadInput, STANDARD_DELAY, 1000);
+            break;
     }
     textBreak(text);
 }
