@@ -4,6 +4,12 @@
 #include <thread>
 using namespace std;
 
+/* Death IDs */
+enum Death {
+    simpleton,
+    gator
+};
+
 /* Text storage */
 struct Text { /// Scene #, dialogue #, choice #
     string userPromptBegin = "What will you do?";
@@ -11,6 +17,10 @@ struct Text { /// Scene #, dialogue #, choice #
     string badInput = "Traveler, I do not understand your command. (Input any of the numbers given.)";
 
     string breakText = "Press ENTER to continue...";
+
+    string gameOver = "\nG A M E   O V E R\nReason for death: ";
+
+    string reasonSimple = "The pinnacle of idiocy. Absolute buffoonery. Take your simpleton brain somewhere else";
 
     string introText = "This is a tale of adventure, YOUR tale of adventure to find the fabled fountain of youth located"
                        " deep within the Everglades. Many perils await you, brave explorer, twists and turns only the "
@@ -32,7 +42,7 @@ struct Text { /// Scene #, dialogue #, choice #
                         "to the water you walk in currently. You shift carefully, as any gator in the area could easily "
                         "stop you in your tracks and end your adventure permanently. However, you chose a specific time "
                         "they are less active. Specifically, the afternoon, as the temperature drop makes them less active. "
-                        "Nevertheless, you pressed on, finding reprieve in the fact that you remembered a handgun, although"
+                        "Nevertheless, you pressed on, finding reprieve in the fact that you remembered a handgun, although "
                         "only eight bullets could fit alongside it.\n";
 
     string scene1d2 = "\nComing to a fork in the glades, you have two choices: a path to the right that looks traveled "
@@ -40,13 +50,19 @@ struct Text { /// Scene #, dialogue #, choice #
                       "left that seems less traveled, and may lead you astray.";
 
     string scene1d2c = "1. Go left\n2. Go right\n3. Go forward";
+
+    string scene1d2c3 = "You aren't a person who listens to rules set in front of you, are you? No, you thought you had "
+                        "to be above everyone else and carve your own path, didn't you? Well, despite the fact you IGNORED the "
+                        "paths laid ahead of you, you arrive at the temple. However, because you went on the straight "
+                        "path, you don't know anything about how to get into the temple, you imbecile. Your adventure was "
+                        "technically for naught, as you are simpleminded. You give up and head home empty handed.";
 };
 
 /* Prototypes */
 class Enemy;
 class Player;
 void enemyEncounter(Player& player, Enemy& enemy); /// Encounter/battle function
-void gameOver(); /// If you die
+void gameOver(Text& text, int deathReason); /// If you die
 void displayText(string& displayedText, int delay, int interLineDelay);
 int readInput(Text& text);
 
@@ -74,12 +90,12 @@ public:
         scrollChecked = 0;
 
     }
-    void takeDamage(int damageTaken) {
+    /*void takeDamage(int damageTaken) {
         hp -= damageTaken;
         if (hp <= 0) {
-            gameOver();
+            void;
         }
-    }
+    } */
     void setScrollStatus() {
         scrollChecked = 1;
     }
@@ -111,6 +127,9 @@ void enemyEncounter(Player& player, Enemy& enemy) {                             
     } while (enemy.hp >= 0);
 }
 
+/// I really want to move everything that takes Text struct input into the class with Text, but idk how to do that
+/// without breaking everything. Maybe separate class with inheritance? Figure out soon, bonus points for OOP
+
 void displayText(string& displayedText, int delay, int interLineDelay) { /// Takes string input and delay between chars in ms.
     int colCounter = 0;
     for (int i = 0; i < displayedText.length(); i++) {
@@ -129,9 +148,6 @@ void displayText(string& displayedText, int delay, int interLineDelay) { /// Tak
     cout << endl;
     this_thread::sleep_for(chrono::milliseconds(500));
 }
-
-/// I really want to move everything that takes Text struct input into the class with Text, but idk how to do that
-/// without breaking everything. Maybe separate class with inheritance? Figure out soon, bonus points for OOP
 
 void transition() {
     for (int i = 0; i < 3; i++) {
@@ -154,10 +170,24 @@ void whatWillYouDo(Text& text) {
     displayText(text.userPromptBegin, 1, 250);
 }
 
-int choice(Text& text) {                                                                                                /// Find a way to make this a thing. Low priority
-    displayText(text.userPromptBegin, 1, 250);
+int readInput(Text& text) {
+    int choice = 0;
+    cin >> choice;
+    while (choice != 1 && choice != 2 && choice != 3) {
+        displayText(text.badInput, 1, 1);
+        cin >> choice;
+    }
+    return choice;
 }
 
+void gameOver(Text& text, int deathReason) {
+    displayText(text.gameOver, 50, 1000);
+    switch (deathReason) {
+        case simpleton:
+            displayText(text.reasonSimple, 1, 1000);
+    }
+    textBreak(text);
+}
 
 void scene1(Text& text, Player& player) {
     int choice1 = 0;
@@ -180,21 +210,14 @@ void scene1(Text& text, Player& player) {
                 case 2:
 
                 case 3:
-
+                    displayText(text.scene1d2c3, 1, 1);
+                    gameOver(text, simpleton);
+                    break;
             }
             break;
     }
 }
 
-int readInput(Text& text) {
-    int choice = 0;
-    cin >> choice;
-    while (choice != 1 && choice != 2 && choice != 3) {
-        displayText(text.badInput, 1, 1);
-        cin >> choice;
-    }
-    return choice;
-}
 
 int main() {
     Player mainPlayer;
