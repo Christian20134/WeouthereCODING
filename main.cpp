@@ -4,10 +4,15 @@
 #include <thread>
 using namespace std;
 
+/* Consts */
+const int STANDARD_DELAY = 10; /// I think I can incorporate this into a class somehow. Templates with separate classes? Med priority
+                               /// Also, when compiling for Windows, set to 1, it looks nicer, doesn't work on Unix for some reason.
+                               /// Use 10 for Mac/Linux
+
 /* Death IDs */
 enum Death {
     simpleton,
-    gator
+    pond
 };
 
 /* Text storage */
@@ -21,6 +26,8 @@ struct Text { /// Scene #, dialogue #, choice #
     string gameOver = "\nG A M E   O V E R\nReason for death: ";
 
     string reasonSimple = "The pinnacle of idiocy. Absolute buffoonery. Take your simpleton brain somewhere else";
+
+    string reasonPond = "Got relaxed. Maybe a little too relaxed...";
 
     string introText = "This is a tale of adventure, YOUR tale of adventure to find the fabled fountain of youth located"
                        " deep within the Everglades. Many perils await you, brave explorer, twists and turns only the "
@@ -56,6 +63,15 @@ struct Text { /// Scene #, dialogue #, choice #
                         "paths laid ahead of you, you arrive at the temple. However, because you went on the straight "
                         "path, you don't know anything about how to get into the temple, you imbecile. Your adventure was "
                         "technically for naught, as you are simpleminded. You give up and head home empty handed.";
+
+    string scene1d2c1 = "You clear through the brush on the path of the left side of the fork. It's quite a narrow path, "
+                        "and windy at that too. You're taking a lot of care not to stray far from the path, as there are "
+                        "dangerous creatures ready to end you at either side. After quite some time walking, you come "
+                        "across a gentle stream, flowing out of a sizeable pond. You decide to go closer to the edge of "
+                        "the pond to investigate. What a relaxing spot! You dip your hand gingerly into the water to feel "
+                        "the cold water run through your fingers and around your hand. \"Ah, that's nice,\" you think to "
+                        "yourself, as you pull your hand back into the open air. It's gone. There's no more hand. You now "
+                        "have a mere stump, drenched in blood. You succumb to your injuries.";
 };
 
 /* Prototypes */
@@ -134,11 +150,13 @@ void displayText(string& displayedText, int delay, int interLineDelay) { /// Tak
     int colCounter = 0;
     for (int i = 0; i < displayedText.length(); i++) {
         cout << displayedText[i];
+        cout.flush();
         colCounter++;
         this_thread::sleep_for(chrono::milliseconds(delay));
         if (displayedText[i] == ' ' && colCounter > 110) {
             cout << " ";
             cout << endl;
+            cout.flush();
             colCounter = 0;
             this_thread::sleep_for(chrono::milliseconds(interLineDelay));
         } else if (displayedText[i] == '!' || displayedText[i] == '.' || displayedText[i] == ',' || displayedText[i] == '?' || displayedText[i] == '-') {
@@ -153,28 +171,30 @@ void transition() {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 10; j++) {
             cout << ".";
-            this_thread::sleep_for(chrono::milliseconds(1));
+            cout.flush();
+            this_thread::sleep_for(chrono::milliseconds(STANDARD_DELAY));
         }
         cout << endl;
+        cout.flush();
         this_thread::sleep_for(chrono::milliseconds(500));
     }
 };
 
 void textBreak(Text& text) {
-    displayText(text.breakText, 1, 1);
+    displayText(text.breakText, STANDARD_DELAY, 1);
     cin.get();
     cin.ignore(1, '\n');
 }
 
 void whatWillYouDo(Text& text) {
-    displayText(text.userPromptBegin, 1, 250);
+    displayText(text.userPromptBegin, STANDARD_DELAY, 250);
 }
 
 int readInput(Text& text) {
     int choice = 0;
     cin >> choice;
     while (choice != 1 && choice != 2 && choice != 3) {
-        displayText(text.badInput, 1, 1);
+        displayText(text.badInput, STANDARD_DELAY, 1);
         cin >> choice;
     }
     return choice;
@@ -184,33 +204,37 @@ void gameOver(Text& text, int deathReason) {
     displayText(text.gameOver, 50, 1000);
     switch (deathReason) {
         case simpleton:
-            displayText(text.reasonSimple, 1, 1000);
+            displayText(text.reasonSimple, STANDARD_DELAY, 1000);
+        case pond:
+        displayText(text.reasonPond, STANDARD_DELAY, 1000);
     }
     textBreak(text);
 }
 
 void scene1(Text& text, Player& player) {
     int choice1 = 0;
-    displayText(text.scene1d1, 1, 1);
+    displayText(text.scene1d1, STANDARD_DELAY, 1);
     whatWillYouDo(text);
-    displayText(text.scene1d1c, 1, 250);
+    displayText(text.scene1d1c, STANDARD_DELAY, 250);
     switch (readInput(text)) {
         case 1:
             displayText(text.scene1d1c1, 20, 250);
             player.setScrollStatus();
             textBreak(text);
         case 2:
-            displayText(text.scene1d1c2, 1, 1);
-            displayText(text.scene1d2, 1, 1);
+            displayText(text.scene1d1c2, STANDARD_DELAY, 1);
+            displayText(text.scene1d2, STANDARD_DELAY, 1);
             whatWillYouDo(text);
-            displayText(text.scene1d2c, 1, 250);
+            displayText(text.scene1d2c, STANDARD_DELAY, 250);
             switch (readInput(text)) {
                 case 1:
-
+                    displayText(text.scene1d2c1, STANDARD_DELAY, 1);
+                    gameOver(text, pond);
+                    break;
                 case 2:
 
                 case 3:
-                    displayText(text.scene1d2c3, 1, 1);
+                    displayText(text.scene1d2c3, STANDARD_DELAY, 1);
                     gameOver(text, simpleton);
                     break;
             }
@@ -222,7 +246,7 @@ void scene1(Text& text, Player& player) {
 int main() {
     Player mainPlayer;
     Text text;
-    displayText(text.introText, 1, 1);
+    displayText(text.introText, STANDARD_DELAY, 1);
     transition();
     scene1(text, mainPlayer);
     return 0;
