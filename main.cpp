@@ -16,8 +16,16 @@ enum Death {
     narrator
 };
 
-/* Text storage */
-struct Text { /// Scene #, dialogue #, choice #
+/* Prototypes */
+class Enemy;
+class Player;
+void enemyEncounter(Player& player, Enemy& enemy); /// Encounter/battle function
+void displayText(string& displayedText, int delay, int interLineDelay);
+
+
+/* Class definitions */
+class Text { /// Scene #, dialogue #, choice #
+private:
     string userPromptBegin = "What will you do?";
 
     string badInput = "Traveler, I do not understand your command. (Input any of the numbers given.)";
@@ -28,7 +36,7 @@ struct Text { /// Scene #, dialogue #, choice #
 
     string breakText = "Press ENTER to continue...";
 
-    string gameOver = "\nG A M E   O V E R\nReason for death: ";
+    string gameOverStr = "\nG A M E   O V E R\nReason for death: ";
 
     string reasonSimple = "The pinnacle of idiocy. Absolute buffoonery. Take your simpleton brain somewhere else";
 
@@ -79,50 +87,132 @@ struct Text { /// Scene #, dialogue #, choice #
                         "the cold water run through your fingers and around your hand. \"Ah, that's nice,\" you think to "
                         "yourself, as you pull your hand back into the open air. It's gone. There's no more hand. You now "
                         "have a mere stump, drenched in blood. You succumb to your injuries.";
+public:
+    Text() {
+        displayText(introText, STANDARD_DELAY, 1);
+        transition();
+    }
+    void displayText(string& displayedText, int delay, int interLineDelay) { /// Takes string input and delay between chars in ms.
+        int colCounter = 0;
+        for (int i = 0; i < displayedText.length(); i++) {
+            cout << displayedText[i];
+            cout.flush();
+            colCounter++;
+            this_thread::sleep_for(chrono::milliseconds(delay));
+            if (displayedText[i] == ' ' && colCounter > 110) {
+                cout << " ";
+                cout << endl;
+                cout.flush();
+                colCounter = 0;
+                this_thread::sleep_for(chrono::milliseconds(interLineDelay));
+            } else if (displayedText[i] == '!' || displayedText[i] == '.' || displayedText[i] == ',' || displayedText[i] == '?' || displayedText[i] == '-') {
+                this_thread::sleep_for(chrono::milliseconds(delay + 200));
+            }
+        }
+        cout << endl;
+        this_thread::sleep_for(chrono::milliseconds(500));
+    }
+
+    void textBreak() {
+        displayText(breakText, STANDARD_DELAY, 1);
+        cin.get();
+        cin.ignore(1, '\n');
+    }
+
+    void whatWillYouDo() {
+        displayText(userPromptBegin, STANDARD_DELAY, 250);
+    }
+
+    void transition() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 10; j++) {
+                cout << ".";
+                cout.flush();
+                this_thread::sleep_for(chrono::milliseconds(STANDARD_DELAY));
+            }
+            cout << endl;
+            cout.flush();
+            this_thread::sleep_for(chrono::milliseconds(500));
+        }
+    };
+
+    void gameOver(int deathReason) {
+        displayText(gameOverStr, 50, 1000);
+        switch (deathReason) {
+            case simpleton:
+                displayText(reasonSimple, STANDARD_DELAY, 1000);
+                break;
+            case pond:
+                displayText(reasonPond, STANDARD_DELAY, 1000);
+                break;
+            case narrator:
+                displayText(reasonBadInput, STANDARD_DELAY, 1000);
+                break;
+        }
+        textBreak();
+    }
+
+    int readInput() {
+        int badChoiceCounter = 0;
+        int choice = 0;
+        cin >> choice;
+        while (choice != 1 && choice != 2 && choice != 3) {
+            if (badChoiceCounter > 3) {
+                displayText(repeatedBadInput, STANDARD_DELAY, 1);
+                gameOver(narrator);
+                break;
+            } else {
+                displayText(badInput, STANDARD_DELAY, 1);
+                badChoiceCounter++;
+            }
+            cin >> choice;
+        }
+        return choice;
+    }
+
+    friend class Player;
 };
-
-/* Prototypes */
-class Enemy;
-class Player;
-void enemyEncounter(Player& player, Enemy& enemy); /// Encounter/battle function
-void gameOver(Text& text, int deathReason); /// If you die
-void displayText(string& displayedText, int delay, int interLineDelay);
-int readInput(Text& text);
-
-
-/* Class Definitons */
 class Player { /// Player class, constructor values exist because this class is only created
     int hp;    /// when the game is started.
-    int maxHP;
-    int damage;
-    float accuracy;
-    int armor;
-    int level;
-    int xp;
     bool scrollChecked;
-    int inventory[];
+    int decisionTree[];
 public:
     Player() {
-        maxHP = 10;
-        hp = maxHP;
-        damage = 1;
-        accuracy = 0.9;
-        armor = 0;
-        level = 1;
-        xp = 0;
         scrollChecked = 0;
-
     }
-    /*void takeDamage(int damageTaken) {
-        hp -= damageTaken;
-        if (hp <= 0) {
-            void;
-        }
-    } */
     void setScrollStatus() {
         scrollChecked = 1;
     }
-    friend void enemyEncounter(Player& player, Enemy& enemy);
+    void scene1(Text& text) {
+        displayText(text.scene1d1, STANDARD_DELAY, 1);
+        text.whatWillYouDo();
+        displayText(text.scene1d1c, STANDARD_DELAY, 250);
+        switch (text.readInput()) {
+            case 1:
+                displayText(text.scene1d1c1, 20, 250);
+                setScrollStatus();
+                text.textBreak();
+            case 2:
+                displayText(text.scene1d1c2, STANDARD_DELAY, 1);
+                displayText(text.scene1d2, STANDARD_DELAY, 1);
+                text.whatWillYouDo();
+                displayText(text.scene1d2c, STANDARD_DELAY, 250);
+                switch (text.readInput()) {
+                    case 1:
+                        displayText(text.scene1d2c1, STANDARD_DELAY, 1);
+                        text.gameOver(pond);
+                        break;
+                    case 2:
+
+                    case 3:
+                        displayText(text.scene1d2c3, STANDARD_DELAY, 1);
+                        text.gameOver(simpleton);
+                        break;
+                }
+                break;
+        }
+    }
+
 };
 
 class Enemy { /// Template for enemies in encounters
@@ -142,133 +232,16 @@ public:
 
 
 /* Function Definitions */
-void enemyEncounter(Player& player, Enemy& enemy) {                                                                     /// This isn't done yet, but we'll work on it later
-    string input = "";
-    do {
-        cout << "What will you do? (Fight, Item, Run)" << endl; /// Player turn, goes first cause uhhhhhhh
-        cin >> input;
-    } while (enemy.hp >= 0);
-}
 
 /// I really want to move everything that takes Text struct input into the class with Text, but idk how to do that
 /// without breaking everything. Maybe separate class with inheritance? Figure out soon, bonus points for OOP
-
-void displayText(string& displayedText, int delay, int interLineDelay) { /// Takes string input and delay between chars in ms.
-    int colCounter = 0;
-    for (int i = 0; i < displayedText.length(); i++) {
-        cout << displayedText[i];
-        cout.flush();
-        colCounter++;
-        this_thread::sleep_for(chrono::milliseconds(delay));
-        if (displayedText[i] == ' ' && colCounter > 110) {
-            cout << " ";
-            cout << endl;
-            cout.flush();
-            colCounter = 0;
-            this_thread::sleep_for(chrono::milliseconds(interLineDelay));
-        } else if (displayedText[i] == '!' || displayedText[i] == '.' || displayedText[i] == ',' || displayedText[i] == '?' || displayedText[i] == '-') {
-            this_thread::sleep_for(chrono::milliseconds(delay + 200));
-        }
-    }
-    cout << endl;
-    this_thread::sleep_for(chrono::milliseconds(500));
-}
-
-void transition() {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 10; j++) {
-            cout << ".";
-            cout.flush();
-            this_thread::sleep_for(chrono::milliseconds(STANDARD_DELAY));
-        }
-        cout << endl;
-        cout.flush();
-        this_thread::sleep_for(chrono::milliseconds(500));
-    }
-};
-
-void textBreak(Text& text) {
-    displayText(text.breakText, STANDARD_DELAY, 1);
-    cin.get();
-    cin.ignore(1, '\n');
-}
-
-void whatWillYouDo(Text& text) {
-    displayText(text.userPromptBegin, STANDARD_DELAY, 250);
-}
-
-int readInput(Text& text) {
-    int badChoiceCounter = 0;
-    int choice = 0;
-    cin >> choice;
-    while (choice != 1 && choice != 2 && choice != 3) {
-        if (badChoiceCounter > 3) {
-            displayText(text.repeatedBadInput, STANDARD_DELAY, 1);
-            gameOver(text, narrator);
-            break;
-        } else {
-            displayText(text.badInput, STANDARD_DELAY, 1);
-            badChoiceCounter++;
-        }
-        cin >> choice;
-    }
-    return choice;
-}
-
-void gameOver(Text& text, int deathReason) {
-    displayText(text.gameOver, 50, 1000);
-    switch (deathReason) {
-        case simpleton:
-            displayText(text.reasonSimple, STANDARD_DELAY, 1000);
-            break;
-        case pond:
-            displayText(text.reasonPond, STANDARD_DELAY, 1000);
-            break;
-        case narrator:
-            displayText(text.reasonBadInput, STANDARD_DELAY, 1000);
-            break;
-    }
-    textBreak(text);
-}
-
-void scene1(Text& text, Player& player) {
-    int choice1 = 0;
-    displayText(text.scene1d1, STANDARD_DELAY, 1);
-    whatWillYouDo(text);
-    displayText(text.scene1d1c, STANDARD_DELAY, 250);
-    switch (readInput(text)) {
-        case 1:
-            displayText(text.scene1d1c1, 20, 250);
-            player.setScrollStatus();
-            textBreak(text);
-        case 2:
-            displayText(text.scene1d1c2, STANDARD_DELAY, 1);
-            displayText(text.scene1d2, STANDARD_DELAY, 1);
-            whatWillYouDo(text);
-            displayText(text.scene1d2c, STANDARD_DELAY, 250);
-            switch (readInput(text)) {
-                case 1:
-                    displayText(text.scene1d2c1, STANDARD_DELAY, 1);
-                    gameOver(text, pond);
-                    break;
-                case 2:
-
-                case 3:
-                    displayText(text.scene1d2c3, STANDARD_DELAY, 1);
-                    gameOver(text, simpleton);
-                    break;
-            }
-            break;
-    }
-}
 
 
 int main() {
     Player mainPlayer;
     Text text;
-    displayText(text.introText, STANDARD_DELAY, 1);
-    transition();
-    scene1(text, mainPlayer);
+    text.transition();
+    mainPlayer.scene1(text);
     return 0;
 }
 
