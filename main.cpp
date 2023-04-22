@@ -87,6 +87,12 @@ private:
                         "the cold water run through your fingers and around your hand. \"Ah, that's nice,\" you think to "
                         "yourself, as you pull your hand back into the open air. It's gone. There's no more hand. You now "
                         "have a mere stump, drenched in blood. You succumb to your injuries.";
+
+    string scene1d2c2 = "Going right, you travel the path carved through the water. You notice sticks pointing in different "
+                        "directions, marked with rocks guiding you. Eventually, you end up at a village? Despite how "
+                        "ludicrous it seems, there is clearly a village in front of you. However, you are not afforded "
+                        "much time to be in awe, as you are quickly surrounded by villagers who all have spears aimed at "
+                        "your throat.";
 public:
     Text() {
         displayText(introText, STANDARD_DELAY, 1);
@@ -117,10 +123,6 @@ public:
         displayText(breakText, STANDARD_DELAY, 1);
         cin.get();
         cin.ignore(1, '\n');
-    }
-
-    void whatWillYouDo() {
-        displayText(userPromptBegin, STANDARD_DELAY, 250);
     }
 
     void transition() {
@@ -175,17 +177,24 @@ public:
 class Player { /// Player class, constructor values exist because this class is only created
     int hp;    /// when the game is started.
     bool scrollChecked;
+    int lastDecision;
     int decisionTree[];
 public:
     Player() {
         scrollChecked = 0;
     }
+
+    void whatWillYouDo(Text& text) {
+        displayText(text.userPromptBegin, STANDARD_DELAY, 250);
+        lastDecision++;
+    }
+
     void setScrollStatus() {
         scrollChecked = 1;
     }
     void scene1(Text& text) {
         displayText(text.scene1d1, STANDARD_DELAY, 1);
-        text.whatWillYouDo();
+        whatWillYouDo(text);
         displayText(text.scene1d1c, STANDARD_DELAY, 250);
         switch (text.readInput()) {
             case 1:
@@ -195,7 +204,7 @@ public:
             case 2:
                 displayText(text.scene1d1c2, STANDARD_DELAY, 1);
                 displayText(text.scene1d2, STANDARD_DELAY, 1);
-                text.whatWillYouDo();
+                whatWillYouDo(text);
                 displayText(text.scene1d2c, STANDARD_DELAY, 250);
                 switch (text.readInput()) {
                     case 1:
@@ -212,7 +221,7 @@ public:
                 break;
         }
     }
-
+    friend class Text;
 };
 
 class Enemy { /// Template for enemies in encounters
@@ -229,13 +238,6 @@ public:
     }
     friend void enemyEncounter(Player& player, Enemy& enemy);
 };
-
-
-/* Function Definitions */
-
-/// I really want to move everything that takes Text struct input into the class with Text, but idk how to do that
-/// without breaking everything. Maybe separate class with inheritance? Figure out soon, bonus points for OOP
-
 
 int main() {
     Player mainPlayer;
