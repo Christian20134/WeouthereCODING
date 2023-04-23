@@ -13,7 +13,13 @@ const int STANDARD_DELAY = 10; /// I think I can incorporate this into a class s
 enum Death {
     simpleton,
     pond,
-    narrator
+    narrator,
+    godred
+};
+
+enum DecisionType {
+    action,
+    dialogue
 };
 
 /* Prototypes */
@@ -28,11 +34,17 @@ class Text { /// Scene #, dialogue #, choice #
 private:
     string userPromptBegin = "What will you do?";
 
+    string userPromptBeginDialogue = "How will you respond?";
+
     string badInput = "Traveler, I do not understand your command. (Input any of the numbers given.)";
 
     string repeatedBadInput = "Okay, you're doing this on purpose. You think you're funny? Gonna have a little bit of "
                               "fun with the person trying to help you on your stupid quest? Well, I quit. No more story. "
                               "No more adventure. I'm done. Find a new narrator.";
+
+    string continueText = "Restart from your last decision? (Y/N)";
+
+    string exitText = "Understood. Exiting...";
 
     string breakText = "Press ENTER to continue...";
 
@@ -43,6 +55,8 @@ private:
     string reasonPond = "Got relaxed. Maybe a little too relaxed...";
 
     string reasonBadInput = "Pissed off the wrong person.";
+
+    string reasonGodred = "Don't say his name.";
 
     string introText = "This is a tale of adventure, YOUR tale of adventure to find the fabled fountain of youth located"
                        " deep within the Everglades. Many perils await you, brave explorer, twists and turns only the "
@@ -93,30 +107,32 @@ private:
                         "ludicrous it seems, there is clearly a village in front of you. However, you are not afforded "
                         "much time to be in awe, as you are quickly surrounded by villagers who all have spears aimed at "
                         "your throat.";
+
+    string scene1d3 = "The village elder emerges, masked from head to toe in gorgeous apparel with a feathery touch to "
+                      "every piece, appearing almost like an apex predator bird coming down upon its prey. \"Who are you "
+                      "and what is your business?\" he asks.";
+
+    string scene1d3c = "1. \"A simple adventurer I mean no harm to you and your people\"\n2. \"Godred.\"";
+
+    string scene1d3c1 = "\"Many of you have passed through these marshlands,\" he states, \"yet so many always return empty "
+                        "handed. Adventurer, tell me, are you after the same thing they all seek?\" he asks, \"If so, let it "
+                        "be known that you cannot and will not succeed.\" Plain as day, he tells you that you cannot "
+                        "succeed on your quest. But that can't be this whole adventure. You refuse. You will not return "
+                        "empty handed. A fire in your stomach has been lit and you refuse to let it die. \"Yet even after"
+                        " I tell you this… I can see the spark behind your eyes,\" he states. \"Men, lower your weapons. "
+                        "I wish to speak to this man and make him understand why he will lose,\" he commands. You are "
+                        "urged to his hut where he invites you inside to a one on one chat.";
+
+    string scene1d3c2 = "Upon hearing the name of the one down below, they all shake, as his name has not been uttered in "
+                        "ages. The ground shakes, and you see the sun turn bright red. The warriors once surrounding "
+                        "you are gone. The world around you is dark, the sun is gone and you are met with his"
+                        " grace. You grovel at what you perceive to be his feet and beg to not be taken so early, but "
+                        "instead not a word is said as his expressionless void of a face stares at you, as your world "
+                        "turns completely dark, as your clothes remain behind for the villagers to see. ";
 public:
     Text() {
         displayText(introText, STANDARD_DELAY, 1);
         transition();
-    }
-    void displayText(string& displayedText, int delay, int interLineDelay) { /// Takes string input and delay between chars in ms.
-        int colCounter = 0;
-        for (int i = 0; i < displayedText.length(); i++) {
-            cout << displayedText[i];
-            cout.flush();
-            colCounter++;
-            this_thread::sleep_for(chrono::milliseconds(delay));
-            if (displayedText[i] == ' ' && colCounter > 110) {
-                cout << " ";
-                cout << endl;
-                cout.flush();
-                colCounter = 0;
-                this_thread::sleep_for(chrono::milliseconds(interLineDelay));
-            } else if (displayedText[i] == '!' || displayedText[i] == '.' || displayedText[i] == ',' || displayedText[i] == '?' || displayedText[i] == '-') {
-                this_thread::sleep_for(chrono::milliseconds(delay + 200));
-            }
-        }
-        cout << endl;
-        this_thread::sleep_for(chrono::milliseconds(500));
     }
 
     void textBreak() {
@@ -139,6 +155,7 @@ public:
     };
 
     void gameOver(int deathReason) {
+        char continueChoice = 'J';
         displayText(gameOverStr, 50, 1000);
         switch (deathReason) {
             case simpleton:
@@ -150,6 +167,16 @@ public:
             case narrator:
                 displayText(reasonBadInput, STANDARD_DELAY, 1000);
                 break;
+            case godred:
+                displayText(reasonGodred, STANDARD_DELAY, 1000);
+                break;
+        }
+        displayText(continueText, STANDARD_DELAY, 1);
+        cin >> continueChoice;
+        if (continueChoice == 'Y') {
+            break;
+        } else {
+            displayText(exitText, STANDARD_DELAY, 500);
         }
         textBreak();
     }
@@ -184,8 +211,15 @@ public:
         scrollChecked = 0;
     }
 
-    void whatWillYouDo(Text& text) {
-        displayText(text.userPromptBegin, STANDARD_DELAY, 250);
+    void whatWillYouDo(Text& text, int decisionType) {
+        switch(decisionType) {
+            case action:
+                displayText(text.userPromptBegin, STANDARD_DELAY, 250);
+                break;
+            case dialogue:
+                displayText(text.userPromptBeginDialogue, STANDARD_DELAY, 250);
+                break;
+        }
         lastDecision++;
     }
 
@@ -194,7 +228,7 @@ public:
     }
     void scene1(Text& text) {
         displayText(text.scene1d1, STANDARD_DELAY, 1);
-        whatWillYouDo(text);
+        whatWillYouDo(text, action);
         displayText(text.scene1d1c, STANDARD_DELAY, 250);
         switch (text.readInput()) {
             case 1:
@@ -203,22 +237,39 @@ public:
                 text.textBreak();
             case 2:
                 displayText(text.scene1d1c2, STANDARD_DELAY, 1);
-                displayText(text.scene1d2, STANDARD_DELAY, 1);
-                whatWillYouDo(text);
-                displayText(text.scene1d2c, STANDARD_DELAY, 250);
-                switch (text.readInput()) {
-                    case 1:
-                        displayText(text.scene1d2c1, STANDARD_DELAY, 1);
-                        text.gameOver(pond);
-                        break;
-                    case 2:
-
-                    case 3:
-                        displayText(text.scene1d2c3, STANDARD_DELAY, 1);
-                        text.gameOver(simpleton);
-                        break;
-                }
+                decision2(text);
                 break;
+        }
+    }
+    void decision2(Text& text) {
+        displayText(text.scene1d2, STANDARD_DELAY, 1);
+        whatWillYouDo(text, action);
+        displayText(text.scene1d2c, STANDARD_DELAY, 250);
+        switch (text.readInput()) {
+            case 1:
+                displayText(text.scene1d2c1, STANDARD_DELAY, 1);
+                text.gameOver(pond);
+                break;
+            case 2:
+                displayText(text.scene1d2c2, STANDARD_DELAY, 1);
+
+            case 3:
+                displayText(text.scene1d2c3, STANDARD_DELAY, 1);
+                text.gameOver(simpleton);
+                break;
+        }
+    }
+    void decision3(Text& text) {
+        displayText(text.scene1d3, STANDARD_DELAY, 1);
+        whatWillYouDo(text, dialogue);
+        displayText(text.scene1d3c, STANDARD_DELAY,1);
+        switch (text.readInput()) {
+            case 1:
+                displayText(text.scene1d1c1, STANDARD_DELAY, 1); /// Add 2nd part of dialogue
+                break;
+            case 2:
+                displayText(text.scene1d1c2, STANDARD_DELAY,1);
+                text.gameOver(godred);
         }
     }
     friend class Text;
@@ -238,6 +289,27 @@ public:
     }
     friend void enemyEncounter(Player& player, Enemy& enemy);
 };
+
+void displayText(string& displayedText, int delay, int interLineDelay) { /// Takes string input and delay between chars in ms.
+    int colCounter = 0;
+    for (int i = 0; i < displayedText.length(); i++) {
+        cout << displayedText[i];
+        cout.flush();
+        colCounter++;
+        this_thread::sleep_for(chrono::milliseconds(delay));
+        if (displayedText[i] == ' ' && colCounter > 110) {
+            cout << " ";
+            cout << endl;
+            cout.flush();
+            colCounter = 0;
+            this_thread::sleep_for(chrono::milliseconds(interLineDelay));
+        } else if (displayedText[i] == '!' || displayedText[i] == '.' || displayedText[i] == ',' || displayedText[i] == '?' || displayedText[i] == '-') {
+            this_thread::sleep_for(chrono::milliseconds(delay + 200));
+        }
+    }
+    cout << endl;
+    this_thread::sleep_for(chrono::milliseconds(500));
+}
 
 int main() {
     Player mainPlayer;
