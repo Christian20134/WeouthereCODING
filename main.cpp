@@ -27,6 +27,7 @@ class Enemy;
 class Player;
 void enemyEncounter(Player& player, Enemy& enemy); /// Encounter/battle function
 void displayText(string& displayedText, int delay, int interLineDelay);
+void chooseReturnDecision();
 
 
 /* Class definitions */
@@ -154,7 +155,8 @@ public:
         }
     };
 
-    void gameOver(int deathReason) {
+
+    void gameOver(int deathReason, Player& player) {
         char continueChoice = 'J';
         displayText(gameOverStr, 50, 1000);
         switch (deathReason) {
@@ -174,7 +176,7 @@ public:
         displayText(continueText, STANDARD_DELAY, 1);
         cin >> continueChoice;
         if (continueChoice == 'Y') {
-            break;
+            chooseReturnDecision(player);
         } else {
             displayText(exitText, STANDARD_DELAY, 500);
         }
@@ -210,6 +212,9 @@ public:
     Player() {
         scrollChecked = 0;
     }
+    int getLastDecision() {
+        return lastDecision;
+    }
 
     void whatWillYouDo(Text& text, int decisionType) {
         switch(decisionType) {
@@ -226,6 +231,7 @@ public:
     void setScrollStatus() {
         scrollChecked = 1;
     }
+
     void scene1(Text& text) {
         displayText(text.scene1d1, STANDARD_DELAY, 1);
         whatWillYouDo(text, action);
@@ -248,7 +254,7 @@ public:
         switch (text.readInput()) {
             case 1:
                 displayText(text.scene1d2c1, STANDARD_DELAY, 1);
-                text.gameOver(pond);
+                text.gameOver(pond, player);
                 break;
             case 2:
                 displayText(text.scene1d2c2, STANDARD_DELAY, 1);
@@ -290,6 +296,7 @@ public:
     friend void enemyEncounter(Player& player, Enemy& enemy);
 };
 
+/* Function Definitions */
 void displayText(string& displayedText, int delay, int interLineDelay) { /// Takes string input and delay between chars in ms.
     int colCounter = 0;
     for (int i = 0; i < displayedText.length(); i++) {
@@ -309,6 +316,14 @@ void displayText(string& displayedText, int delay, int interLineDelay) { /// Tak
     }
     cout << endl;
     this_thread::sleep_for(chrono::milliseconds(500));
+}
+
+void chooseReturnDecision(Player& player) {
+    switch (player.getLastDecision()) {
+        case 1:
+            player.scene1(text);
+            break;
+    }
 }
 
 int main() {
