@@ -155,8 +155,30 @@ public:
         }
     };
 
+    friend class Player;
+    friend class Logic;
+};
+class Player { /// Player class, constructor values exist because this class is only created
+    int hp;    /// when the game is started.
+    bool scrollChecked;
+    int lastDecision;
+public:
+    Player() {
+        scrollChecked = 0;
+    }
+    int getLastDecision() {
+        return lastDecision;
+    }
+    void setScrollStatus() {
+        scrollChecked = 1;
+    }
+    friend class Text;
+    friend class Logic;
+};
 
-    void gameOver(int deathReason, Player& player) {
+class Logic : private Text, private Player { /// Kinda genius play for functions that read both Text and Player vals
+public:
+    void gameOver(int deathReason) {
         char continueChoice = 'J';
         displayText(gameOverStr, 50, 1000);
         switch (deathReason) {
@@ -176,12 +198,35 @@ public:
         displayText(continueText, STANDARD_DELAY, 1);
         cin >> continueChoice;
         if (continueChoice == 'Y') {
-            chooseReturnDecision(player);
+            switch (lastDecision) {
+                case 1:
+                    scene1();
+                    break;
+                case 2:
+                    decision2();
+                    break;
+                case 3:
+                    decision3();
+                    break;
+            }
         } else {
             displayText(exitText, STANDARD_DELAY, 500);
         }
         textBreak();
     }
+
+    void whatWillYouDo(int decisionType) {
+        switch(decisionType) {
+            case action:
+                displayText(userPromptBegin, STANDARD_DELAY, 250);
+                break;
+            case dialogue:
+                displayText(userPromptBeginDialogue, STANDARD_DELAY, 250);
+                break;
+        }
+        lastDecision++;
+    }
+
 
     int readInput() {
         int badChoiceCounter = 0;
@@ -201,99 +246,53 @@ public:
         return choice;
     }
 
-    friend class Player;
-};
-class Player { /// Player class, constructor values exist because this class is only created
-    int hp;    /// when the game is started.
-    bool scrollChecked;
-    int lastDecision;
-    int decisionTree[];
-public:
-    Player() {
-        scrollChecked = 0;
-    }
-    int getLastDecision() {
-        return lastDecision;
-    }
-
-    void whatWillYouDo(Text& text, int decisionType) {
-        switch(decisionType) {
-            case action:
-                displayText(text.userPromptBegin, STANDARD_DELAY, 250);
-                break;
-            case dialogue:
-                displayText(text.userPromptBeginDialogue, STANDARD_DELAY, 250);
-                break;
-        }
-        lastDecision++;
-    }
-
-    void setScrollStatus() {
-        scrollChecked = 1;
-    }
-
-    void scene1(Text& text) {
-        displayText(text.scene1d1, STANDARD_DELAY, 1);
-        whatWillYouDo(text, action);
-        displayText(text.scene1d1c, STANDARD_DELAY, 250);
-        switch (text.readInput()) {
+    void scene1() {
+        displayText(scene1d1, STANDARD_DELAY, 1);
+        whatWillYouDo(action);
+        displayText(scene1d1c, STANDARD_DELAY, 250);
+        switch (readInput()) {
             case 1:
-                displayText(text.scene1d1c1, 20, 250);
+                displayText(scene1d1c1, 20, 250);
                 setScrollStatus();
-                text.textBreak();
+                textBreak();
             case 2:
-                displayText(text.scene1d1c2, STANDARD_DELAY, 1);
-                decision2(text);
+                displayText(scene1d1c2, STANDARD_DELAY, 1);
+                decision2();
                 break;
         }
     }
-    void decision2(Text& text) {
-        displayText(text.scene1d2, STANDARD_DELAY, 1);
-        whatWillYouDo(text, action);
-        displayText(text.scene1d2c, STANDARD_DELAY, 250);
-        switch (text.readInput()) {
+    void decision2() {
+        displayText(scene1d2, STANDARD_DELAY, 1);
+        whatWillYouDo(action);
+        displayText(scene1d2c, STANDARD_DELAY, 250);
+        switch (readInput()) {
             case 1:
-                displayText(text.scene1d2c1, STANDARD_DELAY, 1);
-                text.gameOver(pond, player);
+                displayText(scene1d2c1, STANDARD_DELAY, 1);
+                gameOver(pond);
                 break;
             case 2:
-                displayText(text.scene1d2c2, STANDARD_DELAY, 1);
+                displayText(scene1d2c2, STANDARD_DELAY, 1);
 
             case 3:
-                displayText(text.scene1d2c3, STANDARD_DELAY, 1);
-                text.gameOver(simpleton);
+                displayText(scene1d2c3, STANDARD_DELAY, 1);
+                gameOver(simpleton);
                 break;
         }
     }
-    void decision3(Text& text) {
-        displayText(text.scene1d3, STANDARD_DELAY, 1);
-        whatWillYouDo(text, dialogue);
-        displayText(text.scene1d3c, STANDARD_DELAY,1);
-        switch (text.readInput()) {
+    void decision3() {
+        displayText(scene1d3, STANDARD_DELAY, 1);
+        whatWillYouDo(dialogue);
+        displayText(scene1d3c, STANDARD_DELAY,1);
+        switch (readInput()) {
             case 1:
-                displayText(text.scene1d1c1, STANDARD_DELAY, 1); /// Add 2nd part of dialogue
+                displayText(scene1d1c1, STANDARD_DELAY, 1); /// Add 2nd part of dialogue
                 break;
             case 2:
-                displayText(text.scene1d1c2, STANDARD_DELAY,1);
-                text.gameOver(godred);
+                displayText(scene1d1c2, STANDARD_DELAY,1);
+                gameOver(godred);
         }
     }
-    friend class Text;
-};
 
-class Enemy { /// Template for enemies in encounters
-    int hp;
-    int damage;
-    int armor;
-    float accuracy;
-public:
-    Enemy(int X, int Y, int Z, float J) {
-        hp = X;
-        damage = Y;
-        armor = Z;
-        accuracy = J;
-    }
-    friend void enemyEncounter(Player& player, Enemy& enemy);
 };
 
 /* Function Definitions */
@@ -318,19 +317,12 @@ void displayText(string& displayedText, int delay, int interLineDelay) { /// Tak
     this_thread::sleep_for(chrono::milliseconds(500));
 }
 
-void chooseReturnDecision(Player& player) {
-    switch (player.getLastDecision()) {
-        case 1:
-            player.scene1(text);
-            break;
-    }
-}
-
 int main() {
     Player mainPlayer;
     Text text;
+    Logic logic;
     text.transition();
-    mainPlayer.scene1(text);
+    logic.scene1();
     return 0;
 }
 
