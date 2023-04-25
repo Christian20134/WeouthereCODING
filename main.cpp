@@ -14,7 +14,8 @@ enum Death {
     simpleton,
     pond,
     narrator,
-    godred
+    godred,
+    lowIQ
 };
 
 enum DecisionType {
@@ -58,6 +59,8 @@ private:
     string reasonBadInput = "Pissed off the wrong person.";
 
     string reasonGodred = "Don't say his name.";
+
+    string reasonLowIQ = "Frankly, I'm stunned at how moronic you are.";
 
     string introText = "This is a tale of adventure, YOUR tale of adventure to find the fabled fountain of youth located"
                        " deep within the Everglades. Many perils await you, brave explorer, twists and turns only the "
@@ -130,12 +133,51 @@ private:
                         " grace. You grovel at what you perceive to be his feet and beg to not be taken so early, but "
                         "instead not a word is said as his expressionless void of a face stares at you, as your world "
                         "turns completely dark, as your clothes remain behind for the villagers to see. ";
-public:
-    Text() {
-        displayText(introText, STANDARD_DELAY, 1);
-        transition();
-    }
 
+    string scene1d4 = "\"I apologize for the way you were treated upon stumbling upon our village, but surely you "
+                      "understand. Our village is one of many in these beautiful lands. We all have a copy of each "
+                      "other's gems as a form of peace treaty. Blue is us, green is Pluchiase, orange is Guranchase, "
+                      "and purple is Mangiolo follow after, Do you comprehend what I'm saying?\"\n";
+
+    string scene1d4scroll = "You take in the information, recall the scroll, and link the cities and gems to the riddle "
+                            "on the scroll.";
+
+    string scene1d4noScroll = "You do not quite understand what he is getting at, however, you do realize you are a bit "
+                              "hungry and could really use a whole chicken breast, as that's all you've been thinking about "
+                              "and smelling since you arrived.";
+
+    string scene1d4continued = "\"Regardless if you do, I must ask the elephant in the room, \"What are your intentions "
+                               "with the temple?\"";
+
+    string scene1d4c = "1.Seeking the immense riches\n2.Immortality from the fountain within\n3.Glory for finding and "
+                       "entering the temple.";
+
+    string scene1d5 = "\"I see. So be it, as many have done before. I can offer you the necessary materials to enter the "
+                      "temple, however, be warned young adventurer. What lies in there is not for the faint of heart, "
+                      "and you will be tested beyond belief, but and at the end lies what you have been waiting for.\" "
+                      "he states. \"Now be on your way from this village. Take a left and follow the ancient path to the "
+                      "temple and take on the challenge you seek.\"\n\nNow set on your way and with the gems in hand, you "
+                      "begin to ponder. Is this worth what lies at the end? Can you stand up to the difficulties ahead? "
+                      "Nevertheless you must press on. Following the instructions, you end up at the fork in the road.";
+
+    string scene1d5c = "1. Left like you were told\n2. Forward\n3. Right ";
+
+    string scene1d5c1 = "Following the instructions the elder gave you, walking amongst endless wetland and trees that "
+                        "provide excellent shade for you and any predator that may be lurking in them, you cautiously "
+                        "tread. You arrive at an empty field, which is odd to you, considering the village elder mentioned "
+                        "a temple. You notice a pattern on the floor that leads to different pillars. Each pillar marked "
+                        "with a symbol that represents a city. You figure it is a puzzle and the only way to enter the "
+                        "temple.";
+
+    string scene1d5c2 = "You once again show your ineptness to follow instructions and head the complete wrong way, "
+                        "despite being instructed on where to go. Except this time, the way is tangled and confusing, "
+                        "much like the tree roots you run around. Confused, desperate, and losing hope, you wander "
+                        "straight into a den of lit up eyes. You know full well what this means, yet you have only "
+                        "yourself to blame. Your handgun is powerful, but only limited by its bullets in its chambers. "
+                        "You brace yourself as you count more lit up eyes than you can handle, and pray for salvation.";
+
+
+public:
     void textBreak() {
         displayText(breakText, STANDARD_DELAY, 1);
         cin.get();
@@ -165,9 +207,7 @@ class Player { /// Player class, constructor values exist because this class is 
 public:
     Player() {
         scrollChecked = 0;
-    }
-    int getLastDecision() {
-        return lastDecision;
+        lastDecision = 0;
     }
     void setScrollStatus() {
         scrollChecked = 1;
@@ -178,6 +218,11 @@ public:
 
 class Logic : private Text, private Player { /// Kinda genius play for functions that read both Text and Player vals
 public:
+    Logic() {
+        displayText(introText, STANDARD_DELAY, 1);
+        transition();
+    }
+
     void gameOver(int deathReason) {
         char continueChoice = 'J';
         displayText(gameOverStr, 50, 1000);
@@ -209,6 +254,7 @@ public:
                     decision3();
                     break;
             }
+            lastDecision--;
         } else {
             displayText(exitText, STANDARD_DELAY, 500);
         }
@@ -272,7 +318,7 @@ public:
                 break;
             case 2:
                 displayText(scene1d2c2, STANDARD_DELAY, 1);
-
+                break;
             case 3:
                 displayText(scene1d2c3, STANDARD_DELAY, 1);
                 gameOver(simpleton);
@@ -285,11 +331,45 @@ public:
         displayText(scene1d3c, STANDARD_DELAY,1);
         switch (readInput()) {
             case 1:
-                displayText(scene1d1c1, STANDARD_DELAY, 1); /// Add 2nd part of dialogue
+                displayText(scene1d3c1, STANDARD_DELAY, 1);
+                decision4();
                 break;
             case 2:
-                displayText(scene1d1c2, STANDARD_DELAY,1);
+                displayText(scene1d3c2, STANDARD_DELAY,1);
                 gameOver(godred);
+                break;
+        }
+    }
+    void decision4() {
+        displayText(scene1d4, STANDARD_DELAY, 1);
+        if (scrollChecked == 0) {
+            displayText(scene1d4noScroll, STANDARD_DELAY, 1);
+        } else {
+            displayText(scene1d4scroll, STANDARD_DELAY, 1);
+        }
+        displayText(scene1d4continued, STANDARD_DELAY, 1);
+        whatWillYouDo(dialogue);
+        displayText(scene1d4c, STANDARD_DELAY, 250);
+        readInput();
+        decision5();
+    }
+
+    void decision5() {
+        displayText(scene1d5, STANDARD_DELAY, 1);
+        whatWillYouDo(dialogue);
+        displayText(scene1d5c, STANDARD_DELAY, 250);
+        switch (readInput()) {
+            case 1:
+                displayText(scene1d5c1, STANDARD_DELAY, 1);
+                break;
+            case 2:
+                displayText(scene1d5c2, STANDARD_DELAY, 1);
+                gameOver(lowIQ);
+                break;
+            case 3:
+                displayText(scene1d5c2, STANDARD_DELAY, 1);
+                gameOver(lowIQ);
+                break;
         }
     }
 
@@ -318,10 +398,9 @@ void displayText(string& displayedText, int delay, int interLineDelay) { /// Tak
 }
 
 int main() {
-    Player mainPlayer;
+    Player player;
     Text text;
     Logic logic;
-    text.transition();
     logic.scene1();
     return 0;
 }
