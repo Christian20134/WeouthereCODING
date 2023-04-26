@@ -5,7 +5,7 @@
 using namespace std;
 
 /* Consts */
-const int STANDARD_DELAY = 10; /// I think I can incorporate this into a class somehow. Templates with separate classes? Med priority
+const int STANDARD_DELAY = 0; /// I think I can incorporate this into a class somehow. Templates with separate classes? Med priority
                                /// Also, when compiling for Windows, set to 1, it looks nicer, doesn't work on Unix for some reason.
                                /// Use 10 for Mac/Linux
 
@@ -15,7 +15,10 @@ enum Death {
     pond,
     narrator,
     godred,
-    lowIQ
+    lowIQ,
+    anvil,
+    chicken,
+    bravery
 };
 
 enum DecisionType {
@@ -24,11 +27,8 @@ enum DecisionType {
 };
 
 /* Prototypes */
-class Enemy;
 class Player;
-void enemyEncounter(Player& player, Enemy& enemy); /// Encounter/battle function
 void displayText(string& displayedText, int delay, int interLineDelay);
-void chooseReturnDecision();
 
 
 /* Class definitions */
@@ -61,6 +61,12 @@ private:
     string reasonGodred = "Don't say his name.";
 
     string reasonLowIQ = "Frankly, I'm stunned at how moronic you are.";
+
+    string reasonAnvil = "Bro think he Superman.";
+
+    string reasonChicken = "Wall chicken is flavorful, but hard to come by.";
+
+    string reasonBravery = "Bravery? I guess?";
 
     string introText = "This is a tale of adventure, YOUR tale of adventure to find the fabled fountain of youth located"
                        " deep within the Everglades. Many perils await you, brave explorer, twists and turns only the "
@@ -125,7 +131,7 @@ private:
                         "empty handed. A fire in your stomach has been lit and you refuse to let it die. \"Yet even after"
                         " I tell you this… I can see the spark behind your eyes,\" he states. \"Men, lower your weapons. "
                         "I wish to speak to this man and make him understand why he will lose,\" he commands. You are "
-                        "urged to his hut where he invites you inside to a one on one chat.";
+                        "urged to his hut where he invites you inside to a one on one chat.\n";
 
     string scene1d3c2 = "Upon hearing the name of the one down below, they all shake, as his name has not been uttered in "
                         "ages. The ground shakes, and you see the sun turn bright red. The warriors once surrounding "
@@ -140,11 +146,11 @@ private:
                       "and purple is Mangiolo follow after, Do you comprehend what I'm saying?\"\n";
 
     string scene1d4scroll = "You take in the information, recall the scroll, and link the cities and gems to the riddle "
-                            "on the scroll.";
+                            "on the scroll.\n";
 
     string scene1d4noScroll = "You do not quite understand what he is getting at, however, you do realize you are a bit "
                               "hungry and could really use a whole chicken breast, as that's all you've been thinking about "
-                              "and smelling since you arrived.";
+                              "and smelling since you arrived.\n";
 
     string scene1d4continued = "\"Regardless if you do, I must ask the elephant in the room, \"What are your intentions "
                                "with the temple?\"";
@@ -155,7 +161,7 @@ private:
     string scene1d5 = "\"I see. So be it, as many have done before. I can offer you the necessary materials to enter the "
                       "temple, however, be warned young adventurer. What lies in there is not for the faint of heart, "
                       "and you will be tested beyond belief, but and at the end lies what you have been waiting for.\" "
-                      "he states. \"Now be on your way from this village. Take a left and follow the ancient path to the "
+                      "he states. \"Take the four gems of our kingdoms, and be on your way from this village. Take a left and follow the ancient path to the "
                       "temple and take on the challenge you seek.\"\n\nNow set on your way and with the gems in hand, you "
                       "begin to ponder. Is this worth what lies at the end? Can you stand up to the difficulties ahead? "
                       "Nevertheless you must press on. Following the instructions, you end up at the fork in the road.";
@@ -167,7 +173,7 @@ private:
                         "tread. You arrive at an empty field, which is odd to you, considering the village elder mentioned "
                         "a temple. You notice a pattern on the floor that leads to different pillars. Each pillar marked "
                         "with a symbol that represents a city. You figure it is a puzzle and the only way to enter the "
-                        "temple.";
+                        "temple.\n";
 
     string scene1d5c2 = "You once again show your ineptness to follow instructions and head the complete wrong way, "
                         "despite being instructed on where to go. Except this time, the way is tangled and confusing, "
@@ -175,6 +181,77 @@ private:
                         "straight into a den of lit up eyes. You know full well what this means, yet you have only "
                         "yourself to blame. Your handgun is powerful, but only limited by its bullets in its chambers. "
                         "You brace yourself as you count more lit up eyes than you can handle, and pray for salvation.";
+
+    string scene1d6noScroll = "Feeling the scroll in your bag while grabbing the gems, you feel that you do not need it, "
+                              "as you are better than your grandfather and dont need any hints to solve the puzzle. You "
+                              "begin to put the gems in random orders on the pillars. Dawn begins to rise as you try the "
+                              "last 4 way combination. It works and a great temple the size of a pyramid rises up from "
+                              "the ground breaking into the sky above the mighty trees surrounding you. You are faced "
+                              "with a door, mighty and tall, more than you might be able to push open.";
+
+    string scene1d6noScrollc = "1. PUSH THAT DOOR!\n";
+
+    string scene1d6noScrollc1 = "Why? What compelled you, a normal average size and average built human being, to think "
+                                "you could move a door of more than an estimated 10 tons based on how heavy the stone was? "
+                                "Do you believe yourself to be infinitely strong?  Regardless, you attempt to push the "
+                                "door and it doesn't budge, not even a bit. But you have gotten this far without using "
+                                "your head, you WILL get past the door. You reach deep inside your strength reserves and "
+                                "push, push as hard as your body can. The door still doesn't move, and you should have "
+                                "expected as much. It is a foolish endeavor to try and push any further. However, you "
+                                "hear a mechanism moving just beyond the door. You get hopeful and hope that maybe all "
+                                "your pushing was the correct answer to move the door. Unfortunately, beneath you, the "
+                                "ground gives way and you are plunged into a tiny pit. Getting up, disgruntled, you gaze "
+                                "upward only to met by the cold hard smack of a iron anvil falling directly on you, "
+                                "crushing you entirely and putting an end to your journey.";
+
+    string scene1d6 = "You remember what you read from the scroll and began to grab the gems from your bag, the cities "
+                      "within is a mysterious hint, but it's not lost on you. So far you encountered one city, but the "
+                      "village elder spoke of 3 others in a certain order. You begin to put the gems and their colors "
+                      "in the order you heard. And To your amazement it works!. The ground shakes, the animals scatter "
+                      "as a temple the size of a pyramid emerges from the ground in front of you. Now you understand why "
+                      "the field was so vast and empty, this temple is enormous. You gaze at the gigantic door and "
+                      "realize that the gems created a color pattern as well and input that color into the doors "
+                      "mechanism, a color slider with village pictures on each side. The mighty doors rumble and begin "
+                      "to open, where inside the darkness is encapsulating, invading, and most of all pervading. You "
+                      "pull out your flashlight and its beam pierces through the darkness, the darkness is thick but you "
+                      "can make out certain features. Hesitantly, you step inside, where the torches on the wall light "
+                      "up suddenly. Illustrious drawings and architecture line the walls, is this what many adventurers "
+                      "before you discovered? How far did they get? Putting those aside, you remember you are being tested, "
+                      "and that you need to prove worthy to see the fountain.";
+
+    string scene1d6c = "1.Cautiously walk forward\n2.Punch a wall to check for a hidden door";
+
+    string scene1d6c2 = "Sensing the idea that this temple is a ruse, you attempt to punch a huge wall, hoping for it to be "
+                        "a door. As you fist meets the wall, the reality sinks in once again that you are not some herculean "
+                        "figure. Your knuckles begin to pulsate with pain of flesh meeting hardened stone. Despite the pain, "
+                        "you go around punching the walls around you, damaging your knuckles more. Eventually, on the last "
+                        "punch your whole body attempts enough strength that you hope could trigger a secret wall, your "
+                        "persistence and arrogance finally pays off as you hear a mechanism trigger and the wall before "
+                        "you unveils your prize. A whole roasted chicken. That's it, just something that at this point "
+                        "should be dust considering the temples age. Is there a kitchen service in this temple? How did "
+                        "this even come to be? Regardless, you are losing blood fast from all the punching you did. That, "
+                        "coupled with the infection beginning to take hold in your knuckles mean most certainly you are "
+                        "doomed. You take the chicken, take a bite, and pass out for the last time.";
+
+    string scene1d7 = "You stir your wits and continue forward deeper into the temple. Walls blend together until you "
+                      "arrive at a room. Pressure plates are laid out ahead of you, and you get the feeling one wrong step "
+                      "spells the end. There's nothing telling you where to go, or even how to achieve this. You carefully "
+                      "think of ways, to decipher the puzzle and which plates to step on.";
+
+    string scene1d7c = "1.Use an item from your bag to see which plate to step on\n2. Bravely stumble forward and attempt "
+                       "it with no help.";
+
+    string scene1d7c2 = "No.";
+
+    string scene1d8 = "You realize that you have items in your bag that you could use to help find the right path. You need "
+                      "an item heavy enough to actually press the plate. You look around your surroundings, and notice a "
+                      "piece of wall that has fallen off from age. You take it and chuck it to the plate in front of you. "
+                      "The plate presses and flames shoot out of the floor and attempt to roast the piece of wall to crisp. "
+                      "The piece of wall survives, but may be just about impossible to reclaim. Despite that, you use a "
+                      "piece of cloth to drag it back and try, again and again, until eventually, you make it across the "
+                      "plates, and end up at the second challenge: a room full of mirrors with ways to rotate them, all "
+                      "seemingly towards a singular spot above the next door. You can tell the mirrors can be moved, the "
+                      "question is: how and what way?";
 
 
 public:
@@ -200,17 +277,16 @@ public:
     friend class Player;
     friend class Logic;
 };
-class Player { /// Player class, constructor values exist because this class is only created
-    int hp;    /// when the game is started.
+class Player {
     bool scrollChecked;
     int lastDecision;
 public:
     Player() {
-        scrollChecked = 0;
+        scrollChecked = false;
         lastDecision = 0;
     }
     void setScrollStatus() {
-        scrollChecked = 1;
+        scrollChecked = true;
     }
     friend class Text;
     friend class Logic;
@@ -239,26 +315,49 @@ public:
             case godred:
                 displayText(reasonGodred, STANDARD_DELAY, 1000);
                 break;
+            case lowIQ:
+                displayText(reasonLowIQ, STANDARD_DELAY, 1000);
+                break;
+            case anvil:
+                displayText(reasonAnvil, STANDARD_DELAY, 1000);
+                break;
+            case chicken:
+                displayText(reasonChicken, STANDARD_DELAY, 1000);
+                break;
+            case bravery:
+                displayText(reasonBravery, STANDARD_DELAY, 1000);
         }
         displayText(continueText, STANDARD_DELAY, 1);
         cin >> continueChoice;
+        if (continueChoice == 'y') {
+            continueChoice -= 32;
+        }
         if (continueChoice == 'Y') {
             switch (lastDecision) {
                 case 1:
+                    lastDecision--;
                     scene1();
                     break;
                 case 2:
+                    lastDecision--;
                     decision2();
                     break;
                 case 3:
+                    lastDecision--;
                     decision3();
                     break;
+                case 4:
+                    lastDecision--;
+                    decision4();
+                    break;
+                case 5:
+                    lastDecision--;
+                    decision5();
+                    break;
             }
-            lastDecision--;
         } else {
             displayText(exitText, STANDARD_DELAY, 500);
         }
-        textBreak();
     }
 
     void whatWillYouDo(int decisionType) {
@@ -318,6 +417,7 @@ public:
                 break;
             case 2:
                 displayText(scene1d2c2, STANDARD_DELAY, 1);
+                decision3();
                 break;
             case 3:
                 displayText(scene1d2c3, STANDARD_DELAY, 1);
@@ -361,6 +461,7 @@ public:
         switch (readInput()) {
             case 1:
                 displayText(scene1d5c1, STANDARD_DELAY, 1);
+                decision6();
                 break;
             case 2:
                 displayText(scene1d5c2, STANDARD_DELAY, 1);
@@ -371,6 +472,55 @@ public:
                 gameOver(lowIQ);
                 break;
         }
+    }
+
+    void decision6() {
+        switch (scrollChecked) {
+            case true:
+                displayText(scene1d6, STANDARD_DELAY, 1);
+                whatWillYouDo(action);
+                displayText(scene1d6c, STANDARD_DELAY, 250);
+                switch (readInput()) {
+                    case 1:
+                        decision7();
+                        break;
+                    case 2:
+                        displayText(scene1d6c2, STANDARD_DELAY, 1);
+                        gameOver(chicken);
+                        break;
+                    case 3:
+                        displayText(scene1d6c2, STANDARD_DELAY, 1);
+                        gameOver(chicken);
+                        break;
+                }
+                break;
+            case false:
+                displayText(scene1d6noScroll, STANDARD_DELAY, 1);
+                displayText(scene1d6noScrollc, STANDARD_DELAY, 1000);
+                cin.get();
+                cin.ignore(1, '\n');
+                displayText(scene1d6noScrollc1, STANDARD_DELAY, 1);
+                gameOver(anvil);
+                break;
+        }
+    }
+
+    void decision7() {
+        displayText(scene1d7, STANDARD_DELAY, 1);
+        whatWillYouDo(action);
+        switch (readInput()) {
+            case 1:
+                decision8();
+                break;
+            case 2:
+                displayText(scene1d7c2, STANDARD_DELAY, 1);
+                gameOver(bravery);
+                break;
+        }
+    }
+
+    void decision8() {
+        displayText(scene1d8, STANDARD_DELAY, 1);
     }
 
 };
@@ -389,7 +539,7 @@ void displayText(string& displayedText, int delay, int interLineDelay) { /// Tak
             cout.flush();
             colCounter = 0;
             this_thread::sleep_for(chrono::milliseconds(interLineDelay));
-        } else if (displayedText[i] == '!' || displayedText[i] == '.' || displayedText[i] == ',' || displayedText[i] == '?' || displayedText[i] == '-') {
+        } else if (displayedText[i] == '!' || displayedText[i] == '.' || displayedText[i] == ',' || displayedText[i] == '?' || displayedText[i] == '-' || displayedText[i] == ':') {
             this_thread::sleep_for(chrono::milliseconds(delay + 200));
         }
     }
