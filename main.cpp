@@ -5,7 +5,7 @@
 using namespace std;
 
 /* Consts */
-const int STANDARD_DELAY = 0; /// I think I can incorporate this into a class somehow. Templates with separate classes? Med priority
+const int STANDARD_DELAY = 1; /// I think I can incorporate this into a class somehow. Templates with separate classes? Med priority
                                /// Also, when compiling for Windows, set to 1, it looks nicer, doesn't work on Unix for some reason.
                                /// Use 10 for Mac/Linux
 
