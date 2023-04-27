@@ -116,10 +116,10 @@ private:
                         "directions, marked with rocks guiding you. Eventually, you end up at a village? Despite how "
                         "ludicrous it seems, there is clearly a village in front of you. However, you are not afforded "
                         "much time to be in awe, as you are quickly surrounded by villagers who all have spears aimed at "
-                        "your throat.";
+                        "your throat.\m";
 
     string scene1d3 = "The village elder emerges, masked from head to toe in gorgeous apparel with a feathery touch to "
-                      "every piece, appearing almost like an apex predator bird coming down upon its prey. \"Who are you "
+                      "every piece, looking almost like an apex predator bird coming down upon its prey. \"Who are you "
                       "and what is your business?\" he asks.";
 
     string scene1d3c = "1. \"A simple adventurer I mean no harm to you and your people\"\n2. \"Godred.\"";
@@ -129,7 +129,7 @@ private:
                         "be known that you cannot and will not succeed.\" Plain as day, he tells you that you cannot "
                         "succeed on your quest. But that can't be this whole adventure. You refuse. You will not return "
                         "empty handed. A fire in your stomach has been lit and you refuse to let it die. \"Yet even after"
-                        " I tell you this… I can see the spark behind your eyes,\" he states. \"Men, lower your weapons. "
+                        " I tell you this, I can see the spark behind your eyes,\" he states. \"Men, lower your weapons. "
                         "I wish to speak to this man and make him understand why he will lose,\" he commands. You are "
                         "urged to his hut where he invites you inside to a one on one chat.\n";
 
@@ -143,7 +143,7 @@ private:
     string scene1d4 = "\"I apologize for the way you were treated upon stumbling upon our village, but surely you "
                       "understand. Our village is one of many in these beautiful lands. We all have a copy of each "
                       "other's gems as a form of peace treaty. Blue is us, green is Pluchiase, orange is Guranchase, "
-                      "and purple is Mangiolo follow after, Do you comprehend what I'm saying?\"\n";
+                      "and purple is Mangiolo, do you comprehend what I'm saying?\"\n";
 
     string scene1d4scroll = "You take in the information, recall the scroll, and link the cities and gems to the riddle "
                             "on the scroll.\n";
@@ -155,7 +155,7 @@ private:
     string scene1d4continued = "\"Regardless if you do, I must ask the elephant in the room, \"What are your intentions "
                                "with the temple?\"";
 
-    string scene1d4c = "1.Seeking the immense riches\n2.Immortality from the fountain within\n3.Glory for finding and "
+    string scene1d4c = "1. Seeking the immense riches\n2. Immortality from the fountain within\n3. Glory for finding and "
                        "entering the temple.";
 
     string scene1d5 = "\"I see. So be it, as many have done before. I can offer you the necessary materials to enter the "
@@ -177,7 +177,7 @@ private:
 
     string scene1d5c2 = "You once again show your ineptness to follow instructions and head the complete wrong way, "
                         "despite being instructed on where to go. Except this time, the way is tangled and confusing, "
-                        "much like the tree roots you run around. Confused, desperate, and losing hope, you wander "
+                        "much like the tree roots you're running around. Confused, desperate, and losing hope, you wander "
                         "straight into a den of lit up eyes. You know full well what this means, yet you have only "
                         "yourself to blame. Your handgun is powerful, but only limited by its bullets in its chambers. "
                         "You brace yourself as you count more lit up eyes than you can handle, and pray for salvation.";
@@ -205,21 +205,21 @@ private:
                                 "crushing you entirely and putting an end to your journey.";
 
     string scene1d6 = "You remember what you read from the scroll and began to grab the gems from your bag, the cities "
-                      "within is a mysterious hint, but it's not lost on you. So far you encountered one city, but the "
+                      "within is a mysterious\nhint, but it's not lost on you. So far you encountered one city, but the "
                       "village elder spoke of 3 others in a certain order. You begin to put the gems and their colors "
                       "in the order you heard. And To your amazement it works!. The ground shakes, the animals scatter "
                       "as a temple the size of a pyramid emerges from the ground in front of you. Now you understand why "
                       "the field was so vast and empty, this temple is enormous. You gaze at the gigantic door and "
                       "realize that the gems created a color pattern as well and input that color into the doors "
                       "mechanism, a color slider with village pictures on each side. The mighty doors rumble and begin "
-                      "to open, where inside the darkness is encapsulating, invading, and most of all pervading. You "
+                      "to open, where inside, the darkness is encapsulating, invading, and most of all pervading. You "
                       "pull out your flashlight and its beam pierces through the darkness, the darkness is thick but you "
                       "can make out certain features. Hesitantly, you step inside, where the torches on the wall light "
                       "up suddenly. Illustrious drawings and architecture line the walls, is this what many adventurers "
                       "before you discovered? How far did they get? Putting those aside, you remember you are being tested, "
                       "and that you need to prove worthy to see the fountain.";
 
-    string scene1d6c = "1.Cautiously walk forward\n2.Punch a wall to check for a hidden door";
+    string scene1d6c = "1. Cautiously walk forward\n2. Punch a wall to check for a hidden door";
 
     string scene1d6c2 = "Sensing the idea that this temple is a ruse, you attempt to punch a huge wall, hoping for it to be "
                         "a door. As you fist meets the wall, the reality sinks in once again that you are not some herculean "
@@ -238,10 +238,13 @@ private:
                       "spells the end. There's nothing telling you where to go, or even how to achieve this. You carefully "
                       "think of ways, to decipher the puzzle and which plates to step on.";
 
-    string scene1d7c = "1.Use an item from your bag to see which plate to step on\n2. Bravely stumble forward and attempt "
+    string scene1d7c = "1. Use an item from your bag to see which plate to step on\n2. Bravely stumble forward and attempt "
                        "it with no help.";
 
     string scene1d7c2 = "No.";
+
+    string endDemoText = "You've reached the end of the playable demo. Thank you for playing! Any feedback would be "
+                         "greatly appreciated. Press ENTER at the prompt to exit.";
 
     string scene1d8 = "You realize that you have items in your bag that you could use to help find the right path. You need "
                       "an item heavy enough to actually press the plate. You look around your surroundings, and notice a "
@@ -354,6 +357,14 @@ public:
                     lastDecision--;
                     decision5();
                     break;
+                case 6:
+                    lastDecision--;
+                    decision6();
+                    break;
+                case 7:
+                    lastDecision--;
+                    decision7();
+                    break;
             }
         } else {
             displayText(exitText, STANDARD_DELAY, 500);
@@ -456,7 +467,7 @@ public:
 
     void decision5() {
         displayText(scene1d5, STANDARD_DELAY, 1);
-        whatWillYouDo(dialogue);
+        whatWillYouDo(action);
         displayText(scene1d5c, STANDARD_DELAY, 250);
         switch (readInput()) {
             case 1:
@@ -508,9 +519,11 @@ public:
     void decision7() {
         displayText(scene1d7, STANDARD_DELAY, 1);
         whatWillYouDo(action);
+        displayText(scene1d7c, STANDARD_DELAY, 1);
         switch (readInput()) {
             case 1:
                 decision8();
+                textBreak();
                 break;
             case 2:
                 displayText(scene1d7c2, STANDARD_DELAY, 1);
@@ -520,7 +533,7 @@ public:
     }
 
     void decision8() {
-        displayText(scene1d8, STANDARD_DELAY, 1);
+        displayText(endDemoText, STANDARD_DELAY, 1);
     }
 
 };
