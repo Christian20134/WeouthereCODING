@@ -116,7 +116,7 @@ private:
                         "directions, marked with rocks guiding you. Eventually, you end up at a village? Despite how "
                         "ludicrous it seems, there is clearly a village in front of you. However, you are not afforded "
                         "much time to be in awe, as you are quickly surrounded by villagers who all have spears aimed at "
-                        "your throat.\m";
+                        "your throat.\n";
 
     string scene1d3 = "The village elder emerges, masked from head to toe in gorgeous apparel with a feathery touch to "
                       "every piece, looking almost like an apex predator bird coming down upon its prey. \"Who are you "
